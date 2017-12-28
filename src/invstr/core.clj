@@ -1,5 +1,6 @@
 (ns invstr.core
-  (:require [feedparser-clj.core :as feedparser]
+  (:require [invstr.util :as util]
+            [feedparser-clj.core :as feedparser]
             [clj-http.client :as http]
             [clj-http.cookies :as cookies]
             [hickory.core :as hickory]
@@ -56,49 +57,6 @@
 ;;;; PARSE
 
 
-(defn get-table-data
-  ([table-hiccup]
-   (get-table-data [table-hiccup] []))
-  ([elements result]
-   (cond
-     ;result
-     (empty? elements) (filter #(not (empty? %)) result)
-     ;parents
-     (contains? #{:table :tbody :thead} (first (first elements)))
-     (let [children (->> elements
-                         first
-                         (drop 2)
-                         (filter #(not (string? %))))]
-       (recur (concat (rest elements) children) result))
-     ;rows
-     (= :tr (first (first elements)))
-     (let [children (->> elements
-                         first
-                         (drop 2)
-                         (filter #(not (string? %))))]
-       (recur (concat children (rest elements)) (concat result [[]])))
-     ;cells
-     (contains? #{:td :th} (first (first elements)))
-     (let [cell (->> elements
-                     first
-                     (drop 2)
-                     (map #(if (string? %) (string/trim %) %))
-                     (filter #(not (empty? %)))
-                     first)
-           last-row (concat (last result) [cell])
-           result (concat (drop-last result) [last-row])]
-       (recur (rest elements) result)))))
-
-
-(defn get-table [class hiccup]
-  (->> hiccup
-       (hiccup-find/hiccup-find [:table])
-       (filter (fn [[_ opts]]
-                 (= class (get opts :class))))
-       first
-       get-table-data))
-
-
 (defn parse-breakdown-table [table]
   (let [headers (->> table
                      first
@@ -126,8 +84,8 @@
 
 (defn parse-strategy [hiccup]
   {:title (parse-title hiccup)
-   :asset-summary (get-table "assetSummary" hiccup)
-   :breakdown (->> hiccup (get-table "breakdown") parse-breakdown-table)})
+   :asset-summary (util/get-table "assetSummary" hiccup)
+   :breakdown (->> hiccup (util/get-table "breakdown") parse-breakdown-table)})
 
 
 (defn write-file [strat-id result]
