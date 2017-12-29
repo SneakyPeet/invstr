@@ -44,3 +44,14 @@
                  (= class (get opts :class))))
        first
        get-table-data))
+
+
+(defn company-name [s]
+  (-> s
+      string/lower-case
+      (string/replace "-n-" "")
+      (string/replace "limited" "ltd")
+      (string/replace "holdings" "hldgs")
+      (string/replace " " "")
+      (string/replace "glencoreplc" "glencorexstrataplc")
+      string/trim))

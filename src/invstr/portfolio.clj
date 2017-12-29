@@ -7,14 +7,15 @@
 (def portfolio-file "data/portfolio.html")
 
 
-(defn parse-row [row]
+(defn- parse-row [row]
   (-> row
       (update :profit read-string)
       (update :volume read-string)
       (update :market-price read-string)
       (update :position read-string)
       (update :price read-string)
-      (update :swap read-string)))
+      (update :swap read-string)
+      (update :symbol util/company-name)))
 
 
 
@@ -28,6 +29,11 @@
                      util/get-table-data)
         data    (->> table
                      (filter #(= 12 (count %))))
+        balance (->> table
+                     (filter #(= "Balance:" (first %)))
+                     first second last read-string
+                     (* 100)
+                     int)
         headers (->> data
                      first
                      (map #(-> %
@@ -39,5 +45,8 @@
         rows    (->> data
                      rest
                      (map #(zipmap headers %))
-                     (map parse-row))]
-    rows))
+                     (map parse-row)
+                     (map #(assoc % :portfolio-balance balance)))]
+
+    {:stocks rows
+     :balance balance}))

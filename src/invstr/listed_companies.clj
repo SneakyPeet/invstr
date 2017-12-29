@@ -22,10 +22,44 @@
                    rest
                    (map (fn [[name-anchor code sector]]
                           [(last name-anchor) code sector]))
-                   (map #(zipmap headers %)))]
+                   (map #(zipmap headers %))
+                   (map #(-> %
+                             (assoc :full-name (:company %))
+                             (update :company util/company-name))))]
     (println "Refreshed Company List with " (count rows) " Companies")
     (->> rows pr-str (spit output-file))))
 
 
 (defn get-company-list []
-  (slurp output-file))
+  (->> (slurp output-file)
+       read-string
+       (map #(assoc %
+                    :stockcode (:symbol %)
+                    :symbol (:company %)))))
+
+
+
+(def price-url "https://www.sharenet.co.za/v3/quickshare.php?scode=")
+
+
+(defn stock-pricing [stock]
+  (let [url (str price-url stock)
+        tables (->> url
+                    slurp
+                    hickory/parse
+                    hickory/as-hiccup
+                    (hiccup-find/hiccup-find [:table]))
+        price-data (->> (nth tables 3)
+                        util/get-table-data)
+        close-data (->> (nth tables 4)
+                        util/get-table-data)]
+    (->> (concat price-data close-data)
+         (map (fn [[k v]]
+                [(-> k
+                     string/lower-case
+                     (string/replace "'" "")
+                     (string/replace " " "-")
+                     keyword)
+                 (read-string v)]))
+         (into {})
+         (merge {:stockcode stock}))))
