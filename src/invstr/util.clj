@@ -55,3 +55,8 @@
       (string/replace " " "")
       (string/replace "glencoreplc" "glencorexstrataplc")
       string/trim))
+
+(defn indexed [coll]
+  (->> coll
+       (map-indexed
+        (fn [i m] (assoc m :i (inc i))))))

@@ -1,5 +1,6 @@
 (ns invstr.balance
   (:require [invstr.listed-companies :as listed-companies]
+            [invstr.util :as util]
             [invstr.portfolio :as portfolio]
             [invstr.strategies :as strategies]
             [clojure.pprint :as pprint]))
@@ -117,8 +118,9 @@
                           :volume (:action-volume %)
                           :value  (:action-value %))))
          (filter #(not (empty? (:action %))))
+         util/indexed
          (sort-by :code)
-         (pprint/print-table [:stockcode :action :volume :value :allocation :price]))
+         (pprint/print-table [:i :stockcode :action :volume :value :allocation :price]))
     (println)
     (println "OWNED")
     (->> print-values
@@ -128,8 +130,9 @@
                           :allocation (:owned-allocation %)
                           :code (:stockcode %))))
          (filter #(> (:volume %) 0))
+         util/indexed
          (sort-by :code)
-         (pprint/print-table [:code :name :volume :value :allocation]))
+         (pprint/print-table [:i :code :name :volume :value :allocation]))
     (println)
     (println "CALCS")
     (->> print-values
@@ -146,7 +149,8 @@
                           :f-val (:trade-value-with-fees %)
                           :f-vol (:trade-volume-with-fees %)
                           :a (:action %))))
-         (pprint/print-table [:c :a
+         util/indexed
+         (pprint/print-table [:i :c :a
                               :e-val :e-al
                               :o-val :o-vol :o-al
                               :t-val :t-vol
