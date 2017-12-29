@@ -8,4 +8,6 @@
                  [clj-http "3.7.0"]
                  [hickory "0.7.1"]
                  [hiccup-find "0.5.0"]]
-  :main invstr.core)
+  :main invstr.core
+  :profiles {:uberjar {:aot :all}}
+  :uberjar-name "invstr.jar")

@@ -1,4 +1,5 @@
 (ns invstr.core
+  (:gen-class)
   (:require [invstr.strategies :as strategies]
             [invstr.balance :as balance]))
 
