@@ -116,11 +116,12 @@
          (map #(-> %
                    (assoc :code (:stockcode %)
                           :volume (:action-volume %)
-                          :value  (:action-value %))))
+                          :value  (:action-value %)
+                          :owned  (:owned-allocation %))))
          (filter #(not (empty? (:action %))))
          util/indexed
          (sort-by :code)
-         (pprint/print-table [:i :stockcode :action :volume :value :allocation :price]))
+         (pprint/print-table [:i :stockcode :action :volume :value :allocation :owned :price]))
     (println)
     (println "OWNED")
     (->> print-values
