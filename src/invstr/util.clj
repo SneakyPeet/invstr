@@ -51,6 +51,7 @@
       string/lower-case
       (string/replace "-n-" "")
       (string/replace "limited" "ltd")
+      (string/replace "group" "grp")
       (string/replace "holdings" "hldgs")
       (string/replace " " "")
       (string/replace "glencoreplc" "glencorexstrataplc")
