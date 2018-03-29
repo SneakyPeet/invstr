@@ -26,6 +26,7 @@
                    (map #(-> %
                              (assoc :full-name (:company %))
                              (update :company util/company-name))))]
+    (set! *print-length* nil)
     (println "Refreshed Company List with " (count rows) " Companies")
     (->> rows pr-str (spit output-file))))
 
@@ -49,9 +50,10 @@
                     hickory/parse
                     hickory/as-hiccup
                     (hiccup-find/hiccup-find [:table]))
-        price-data (->> (nth tables 3)
+        price-table-number 2
+        price-data (->> (nth tables price-table-number)
                         util/get-table-data)
-        close-data (->> (nth tables 4)
+        close-data (->> (nth tables (inc price-table-number))
                         util/get-table-data)]
     (->> (concat price-data close-data)
          (map (fn [[k v]]
