@@ -26,7 +26,7 @@
                    (map #(-> %
                              (assoc :full-name (:company %))
                              (update :company util/company-name))))]
-    (set! *print-length* nil)
+    (try (set! *print-length* nil) (catch Exception e nil)) ;;Fixes things
     (println "Refreshed Company List with " (count rows) " Companies")
     (->> rows pr-str (spit output-file))))
 
