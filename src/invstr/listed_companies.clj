@@ -66,3 +66,23 @@
          (into {})
          (merge {:stockcode stock})))
   )
+
+
+(defn- test-stock-pricing [n]
+  (let [url (str price-url "mrp")
+        tables (->> url
+                    slurp
+                    hickory/parse
+                    hickory/as-hiccup
+                    (hiccup-find/hiccup-find [:table]))
+        price-table-number n
+        price-data (->> (nth tables price-table-number)
+                        util/get-table-data)
+        close-data (->> (nth tables (inc price-table-number))
+                        util/get-table-data)]
+    (prn price-data)
+    (prn "--------")
+    (prn close-data))
+  )
+
+;(test-stock-pricing 0)
