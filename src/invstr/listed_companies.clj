@@ -50,7 +50,7 @@
                     hickory/parse
                     hickory/as-hiccup
                     (hiccup-find/hiccup-find [:table]))
-        price-table-number 2
+        price-table-number 0
         price-data (->> (nth tables price-table-number)
                         util/get-table-data)
         close-data (->> (nth tables (inc price-table-number))
@@ -64,4 +64,5 @@
                      keyword)
                  (read-string v)]))
          (into {})
-         (merge {:stockcode stock}))))
+         (merge {:stockcode stock})))
+  )
